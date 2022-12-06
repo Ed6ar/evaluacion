@@ -5,14 +5,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.edgar.data.services.signIn.SignInRequest
-import com.edgar.domine.LoginUseCase
+import com.edgar.data.services.register.RegisterRequest
+import com.edgar.domine.RegisterUseCase
 import com.edgar.evaluacion.R
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 
-class SignInViewModel(
+class SignUpViewModel(
     private val retrofit: Retrofit
 ): ViewModel() {
 
@@ -31,15 +31,18 @@ class SignInViewModel(
         _errorId.postValue(R.string.SomethingWasWrong)
     }
 
-    fun tryToSignIn(signInRequest: SignInRequest){
+    fun tryToRegisterUser(registerRequest: RegisterRequest){
+
+        Log.e("tryToRegisterUser","registerRequest: $registerRequest")
+
         viewModelScope.launch(exceptionHandler) {
             _loading.postValue(true)
-            LoginUseCase(retrofit).execute(signInRequest = signInRequest).apply {
+            RegisterUseCase(retrofit).execute(registerRequest = registerRequest).apply {
                 if(this.isSuccessful){
-                    Log.e("tryToSignIn","${this.body()}")
+                    Log.e("tryToRegisterUser","${this.body()}")
                     _loading.postValue(false)
                 }else{
-                    Log.e("tryToSignIn","${this.errorBody()}")
+                    Log.e("tryToRegisterUser","${this.errorBody()}")
                     throw Exception()
                 }
             }

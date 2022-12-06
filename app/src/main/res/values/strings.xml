@@ -4,12 +4,13 @@
     <string name="SignIn">Inicio de sesion</string>
 
     <string name="ContinueSignIn">Continuar</string>
+    <string name="Name">Nombre</string>
     <string name="Email">Email</string>
     <string name="Password">Password</string>
-    <string name="ConfirmPassword">Confirmar password</string>
 
     <!--Errors-->
     <string name="InvalidEmail">Email invalido</string>
+    <string name="InvalidName">Nombre invalido</string>
     <string name="InvalidPassword">Password invalido</string>
-    <string name="PasswordDontMatch">El password no coincide </string>
+    <string name="SomethingWasWrong">Algo salió mal, inténtalo de nuevo</string>
 </resources>

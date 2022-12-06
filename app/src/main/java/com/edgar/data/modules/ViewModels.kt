@@ -1,9 +1,11 @@
 package com.edgar.data.modules
 
 import com.edgar.ui.viewModels.SignInViewModel
-import org.koin.androidx.viewmodel.dsl.viewModelOf
+import com.edgar.ui.viewModels.SignUpViewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val VIEW_MODELS = module {
-    viewModelOf(::SignInViewModel)
+    viewModel { SignInViewModel(retrofit = get()) }
+    viewModel { SignUpViewModel(retrofit = get()) }
 }

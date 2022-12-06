@@ -5,29 +5,36 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
+import com.edgar.data.services.register.RegisterRequest
 import com.edgar.domine.utils.emojisFilter
 import com.edgar.domine.utils.validateEmail
 import com.edgar.domine.utils.validatePassword
 import com.edgar.evaluacion.R
 import com.edgar.evaluacion.databinding.FragmentSignUpBinding
+import com.edgar.ui.viewModels.SignUpViewModel
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class SignUpFragment : Fragment() {
 
+    private val signUpViewModel by activityViewModel<SignUpViewModel>()
     private lateinit var binding: FragmentSignUpBinding
-    private var email: String = ""
-    private var password: String = ""
-    private var passwordConfirmation: String = ""
+    private var emailHolder: String = ""
+    private var passwordHolder: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSignUpBinding.inflate(inflater, container, false)
+
         setContent(
             email = arguments?.getString(EMAIL),
             password = arguments?.getString(PASSWORD)
         )
+
+        listeners()
 
         return binding.root
     }
@@ -51,34 +58,54 @@ class SignUpFragment : Fragment() {
             etEmail.addTextChangedListener {
                 it.toString().apply {
                     validateEmail(view = binding.etEmail, email = this)
-                    if(email != this) this@SignUpFragment.email = this
+                    if(email != this) emailHolder = this
                 }
+                validateButtonState()
             }
             etPassword.addTextChangedListener {
                 it.toString().apply {
-                    if(password != this) this@SignUpFragment.password = this
+                    if(password != this) passwordHolder = this
                     validatePassword(
                         view = binding.etPassword,
-                        password = this,
-                        passwordConfirmation = passwordConfirmation
+                        password = this
                     )
                 }
-            }
-            etConfirmPassword.addTextChangedListener {
-                it.toString().apply {
-                    if(passwordConfirmation != this) passwordConfirmation = this
-                    validatePassword(
-                        view = binding.etConfirmPassword,
-                        password = this,
-                        passwordConfirmation = password ?: ""
-                    )
-                }
+                validateButtonState()
             }
 
             btContinue.setOnClickListener {
-                //TODO
+                signUpViewModel.tryToRegisterUser(
+                    registerRequest = RegisterRequest(
+                        email = emailHolder,
+                        password = passwordHolder
+                    )
+                )
             }
 
         }
+    }
+
+    private fun listeners(){
+        signUpViewModel.loading.observe(viewLifecycleOwner) {
+            if(it){
+                binding.pbLoader.root.visibility = View.VISIBLE
+                binding.llContent.visibility = View.GONE
+            } else {
+                binding.llContent.visibility = View.VISIBLE
+                binding.pbLoader.root.visibility = View.GONE
+            }
+        }
+
+        signUpViewModel.errorId.observe(viewLifecycleOwner) {
+            if(it != null){
+                signUpViewModel.resetErrorMessage()
+                val errorMessage = this@SignUpFragment.getString(it)
+                Toast.makeText(this@SignUpFragment.requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun validateButtonState(){
+        binding.btContinue.isEnabled = binding.etEmail.error.isNullOrEmpty() && binding.etPassword.error.isNullOrEmpty()
     }
 }
