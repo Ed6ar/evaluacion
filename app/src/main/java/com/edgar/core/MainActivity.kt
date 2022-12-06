@@ -1,4 +1,4 @@
-package com.edgar.ui
+package com.edgar.core
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

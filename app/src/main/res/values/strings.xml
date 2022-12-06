@@ -2,4 +2,12 @@
     <string name="app_name">Evaluación</string>
     <string name="SignUp">Registro</string>
     <string name="SignIn">Inicio de sesion</string>
+
+    <string name="ContinueSignIn">Continuar</string>
+    <string name="Email">Email</string>
+    <string name="Password">Password</string>
+
+    <!--Errors-->
+    <string name="InvalidEmail">Email invalido</string>
+    <string name="InvalidPassword">Password invalido</string>
 </resources>
