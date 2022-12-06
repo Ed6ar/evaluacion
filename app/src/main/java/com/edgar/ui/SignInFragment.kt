@@ -2,7 +2,6 @@ package com.edgar.ui
 
 import android.os.Bundle
 import android.util.Log
-import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,11 +10,14 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import com.edgar.domine.utils.emojisFilter
+import com.edgar.domine.utils.validateEmail
+import com.edgar.domine.utils.validatePassword
 import com.edgar.evaluacion.R
 import com.edgar.evaluacion.databinding.FragmentSignInBinding
 
 
 const val EMAIL = "email"
+const val PASSWORD = "password"
 
 class SignInFragment : Fragment() {
 
@@ -44,13 +46,17 @@ class SignInFragment : Fragment() {
             //TextFields
             etEmail.addTextChangedListener {
                 it.toString().apply {
-                    validateEmail(this)
+                    validateEmail(view = binding.etEmail, email = this)
                     if(email != this) email = this
                 }
             }
             etPassword.addTextChangedListener {
                 it.toString().apply {
-                    validatePassword(this)
+                    validatePassword(
+                        view = binding.etPassword,
+                        password = this,
+                        passwordConfirmation = ""
+                    )
                     if(password != this) password = this
                 }
             }
@@ -62,25 +68,16 @@ class SignInFragment : Fragment() {
                 NavHostFragment.findNavController(this@SignInFragment)
                     .navigate(
                         R.id.action_signInFragment_to_signUp,
-                        bundleOf(EMAIL to email)
+                        bundleOf(
+                            EMAIL to email,
+                            PASSWORD to password
+                        )
                     )
             }
             btSignIn.setOnClickListener {
 
             }
         }
-    }
-
-    private fun validateEmail(email: String) {
-        binding.etEmail.error = if(email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches())
-            this.getString(R.string.InvalidEmail)
-        else ""
-    }
-
-    private fun validatePassword(password: String) {
-        binding.etPassword.error = if(password.isEmpty())
-            this.getString(R.string.InvalidPassword)
-        else ""
     }
 
 }

@@ -6,8 +6,10 @@
     <string name="ContinueSignIn">Continuar</string>
     <string name="Email">Email</string>
     <string name="Password">Password</string>
+    <string name="ConfirmPassword">Confirmar password</string>
 
     <!--Errors-->
     <string name="InvalidEmail">Email invalido</string>
     <string name="InvalidPassword">Password invalido</string>
+    <string name="PasswordDontMatch">El password no coincide </string>
 </resources>
