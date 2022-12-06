@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">Evaluacion</string>
+    <string name="app_name">Evaluación</string>
+    <string name="SignUp">Registro</string>
+    <string name="SignIn">Inicio de sesion</string>
 </resources>
