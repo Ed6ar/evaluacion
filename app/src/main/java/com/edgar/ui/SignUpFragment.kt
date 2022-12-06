@@ -1,5 +1,6 @@
 package com.edgar.ui
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -7,18 +8,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
+import com.edgar.data.UserData
 import com.edgar.data.services.register.RegisterRequest
 import com.edgar.domine.utils.emojisFilter
 import com.edgar.domine.utils.validateEmail
 import com.edgar.domine.utils.validatePassword
 import com.edgar.evaluacion.R
 import com.edgar.evaluacion.databinding.FragmentSignUpBinding
+import com.edgar.ui.viewModels.MainViewModel
 import com.edgar.ui.viewModels.SignUpViewModel
+import com.google.gson.Gson
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class SignUpFragment : Fragment() {
 
     private val signUpViewModel by activityViewModel<SignUpViewModel>()
+    private val mainViewModel by activityViewModel<MainViewModel>()
+
     private lateinit var binding: FragmentSignUpBinding
     private var emailHolder: String = ""
     private var passwordHolder: String = ""
@@ -78,7 +84,15 @@ class SignUpFragment : Fragment() {
                     registerRequest = RegisterRequest(
                         email = emailHolder,
                         password = passwordHolder
-                    )
+                    ),
+                    onSuccess = { token ->
+                        saveUser(userData = UserData(
+                            token = token,
+                            email = emailHolder
+                        ))
+
+                        mainViewModel.navigateToUserActivity(state = true)
+                    }
                 )
             }
 
@@ -107,5 +121,13 @@ class SignUpFragment : Fragment() {
 
     private fun validateButtonState(){
         binding.btContinue.isEnabled = binding.etEmail.error.isNullOrEmpty() && binding.etPassword.error.isNullOrEmpty()
+    }
+
+    private fun saveUser(userData: UserData){
+        val sharedPref = this.requireActivity().getPreferences(Context.MODE_PRIVATE)
+        with(sharedPref.edit()){
+            putString(this@SignUpFragment.getString(R.string.userData), Gson().toJson(userData))
+            apply()
+        }
     }
 }

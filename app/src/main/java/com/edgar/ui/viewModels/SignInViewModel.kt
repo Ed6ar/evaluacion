@@ -31,13 +31,14 @@ class SignInViewModel(
         _errorId.postValue(R.string.SomethingWasWrong)
     }
 
-    fun tryToSignIn(signInRequest: SignInRequest){
+    fun tryToSignIn(signInRequest: SignInRequest, onSuccess: (token: String) -> Unit){
         viewModelScope.launch(exceptionHandler) {
             _loading.postValue(true)
             LoginUseCase(retrofit).execute(signInRequest = signInRequest).apply {
                 if(this.isSuccessful){
                     Log.e("tryToSignIn","${this.body()}")
                     _loading.postValue(false)
+                    onSuccess(this.body()!!.token!!)
                 }else{
                     Log.e("tryToSignIn","${this.errorBody()}")
                     throw Exception()

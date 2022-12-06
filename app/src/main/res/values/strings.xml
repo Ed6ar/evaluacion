@@ -1,4 +1,7 @@
 <resources>
+    <!--SharedPref-->
+    <string name="userData">userData</string>
+
     <string name="app_name">Evaluación</string>
     <string name="SignUp">Registro</string>
     <string name="SignIn">Inicio de sesion</string>

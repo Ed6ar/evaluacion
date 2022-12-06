@@ -31,7 +31,7 @@ class SignUpViewModel(
         _errorId.postValue(R.string.SomethingWasWrong)
     }
 
-    fun tryToRegisterUser(registerRequest: RegisterRequest){
+    fun tryToRegisterUser(registerRequest: RegisterRequest, onSuccess: (token: String) -> Unit){
 
         Log.e("tryToRegisterUser","registerRequest: $registerRequest")
 
@@ -41,6 +41,7 @@ class SignUpViewModel(
                 if(this.isSuccessful){
                     Log.e("tryToRegisterUser","${this.body()}")
                     _loading.postValue(false)
+                    onSuccess(this.body()!!.token!!)
                 }else{
                     Log.e("tryToRegisterUser","${this.errorBody()}")
                     throw Exception()

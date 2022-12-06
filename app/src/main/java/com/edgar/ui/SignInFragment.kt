@@ -1,5 +1,6 @@
 package com.edgar.ui
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,13 +11,16 @@ import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
+import com.edgar.data.UserData
 import com.edgar.data.services.signIn.SignInRequest
 import com.edgar.domine.utils.emojisFilter
 import com.edgar.domine.utils.validateEmail
 import com.edgar.domine.utils.validatePassword
 import com.edgar.evaluacion.R
 import com.edgar.evaluacion.databinding.FragmentSignInBinding
+import com.edgar.ui.viewModels.MainViewModel
 import com.edgar.ui.viewModels.SignInViewModel
+import com.google.gson.Gson
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 const val EMAIL = "email"
@@ -25,6 +29,8 @@ const val PASSWORD = "password"
 class SignInFragment : Fragment() {
 
     private val signInViewModel by activityViewModel<SignInViewModel>()
+    private val mainViewModel by activityViewModel<MainViewModel>()
+
     private lateinit var binding: FragmentSignInBinding
     private var emailHolder: String = ""
     private var passwordHolder: String = ""
@@ -84,7 +90,15 @@ class SignInFragment : Fragment() {
                     signInRequest = SignInRequest(
                         email = emailHolder,
                         password = passwordHolder
-                    )
+                    ),
+                    onSuccess = { token ->
+                        saveUser(userData = UserData(
+                            token = token,
+                            email = emailHolder
+                        ))
+
+                        mainViewModel.navigateToUserActivity(state = true)
+                    }
                 )
             }
         }
@@ -111,6 +125,14 @@ class SignInFragment : Fragment() {
 
     private fun validateButtonState(){
         binding.btSignIn.isEnabled = binding.etEmail.error.isNullOrEmpty() && binding.etPassword.error.isNullOrEmpty()
+    }
+
+    private fun saveUser(userData: UserData){
+        val sharedPref = this.requireActivity().getPreferences(Context.MODE_PRIVATE)
+        with(sharedPref.edit()){
+            putString(this@SignInFragment.getString(R.string.userData), Gson().toJson(userData))
+            apply()
+        }
     }
 
 }
