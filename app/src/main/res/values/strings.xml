@@ -11,13 +11,17 @@
 
     <string name="ContinueSignIn">Continuar</string>
     <string name="Name">Nombre</string>
+    <string name="LastName">Apellido</string>
     <string name="Email">Email</string>
     <string name="Password">Password</string>
     <string name="Search">Buscar…</string>
+    <string name="Add">Agregar</string>
+    <string name="Edit">Editar</string>
 
     <!--Errors-->
     <string name="InvalidEmail">Email invalido</string>
     <string name="InvalidName">Nombre invalido</string>
+    <string name="InvalidLastName">Apellido invalido</string>
     <string name="InvalidPassword">Password invalido</string>
     <string name="WrongEmailOrPassword">Usuario o contraseña incorrecto</string>
     <string name="SomethingWasWrong">Algo salió mal, inténtalo de nuevo</string>

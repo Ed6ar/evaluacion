@@ -18,5 +18,6 @@
         android:id="@+id/createOrUpdateFragment"
         android:name="com.edgar.ui.CreateOrUpdateFragment"
         android:label="fragment_create_or_update"
-        tools:layout="@layout/fragment_create_or_update" />
+        tools:layout="@layout/fragment_create_or_update" >
+    </fragment>
 </navigation>

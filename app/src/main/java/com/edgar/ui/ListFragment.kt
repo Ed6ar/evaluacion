@@ -6,8 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.NavHostFragment
 import com.edgar.data.UserDataHolder
 import com.edgar.evaluacion.R
 import com.edgar.evaluacion.databinding.FragmentListBinding
@@ -16,7 +18,7 @@ import com.edgar.ui.viewModels.ListViewModel
 import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 const val CREATE = "create"
-const val ACTION = "action"
+const val DATA = "data"
 
 class ListFragment : Fragment() {
 
@@ -86,6 +88,14 @@ class ListFragment : Fragment() {
 
         listViewModel.usersFiltered.observe(viewLifecycleOwner) {
             adapter.setData(it)
+        }
+
+        binding.btAdd.setOnClickListener {
+            NavHostFragment.findNavController(this@ListFragment)
+                .navigate(
+                    R.id.action_listFragment_to_createOrUpdateFragment,
+                    bundleOf(DATA to null)
+                )
         }
 
     }
