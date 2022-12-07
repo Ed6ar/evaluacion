@@ -13,9 +13,9 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import com.edgar.data.UserData
 import com.edgar.data.services.signIn.SignInRequest
-import com.edgar.domine.utils.emojisFilter
-import com.edgar.domine.utils.validateEmail
-import com.edgar.domine.utils.validatePassword
+import com.edgar.ui.utils.emojisFilter
+import com.edgar.ui.utils.validateEmail
+import com.edgar.ui.utils.validatePassword
 import com.edgar.evaluacion.R
 import com.edgar.evaluacion.databinding.FragmentSignInBinding
 import com.edgar.ui.viewModels.MainViewModel
@@ -96,8 +96,6 @@ class SignInFragment : Fragment() {
                             token = token,
                             email = emailHolder
                         ))
-
-                        mainViewModel.navigateToUserActivity(state = true)
                     }
                 )
             }
@@ -130,7 +128,11 @@ class SignInFragment : Fragment() {
     private fun saveUser(userData: UserData){
         val sharedPref = this.requireActivity().getPreferences(Context.MODE_PRIVATE)
         with(sharedPref.edit()){
-            putString(this@SignInFragment.getString(R.string.userData), Gson().toJson(userData))
+
+            val userDataAsString = Gson().toJson(userData)
+            mainViewModel.navigateToUserActivity(userData = userDataAsString)
+
+            putString(this@SignInFragment.getString(R.string.userData), userDataAsString)
             apply()
         }
     }

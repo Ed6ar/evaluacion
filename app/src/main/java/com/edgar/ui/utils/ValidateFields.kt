@@ -1,4 +1,4 @@
-package com.edgar.domine.utils
+package com.edgar.ui.utils
 
 import android.util.Patterns
 import android.widget.EditText

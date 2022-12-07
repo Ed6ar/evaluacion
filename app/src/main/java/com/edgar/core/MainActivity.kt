@@ -6,11 +6,14 @@ import android.os.Bundle
 import android.view.View
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import com.edgar.data.UserData
+import com.edgar.data.UserDataHolder
 import com.edgar.data.modules.RETROFIT
 import com.edgar.data.modules.VIEW_MODELS
 import com.edgar.evaluacion.R
 import com.edgar.evaluacion.databinding.ActivityMainBinding
 import com.edgar.ui.viewModels.MainViewModel
+import com.google.gson.Gson
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.context.startKoin
@@ -34,6 +37,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         navController = setNavController()
+
         listeners()
         validateAppState()
 
@@ -56,19 +60,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         mainVideModel.navigate.observe(this) {
-            if(it) {
+            if(it != null) {
                 finish()
+                UserDataHolder.setData(Gson().fromJson(it, UserData::class.java))
                 navController.navigate(R.id.userActivity)
             }
         }
     }
 
     private fun validateAppState() {
-
         val sharedPref = this.getPreferences(Context.MODE_PRIVATE)
         with(sharedPref.getString(this.getString(R.string.userData), null)) {
             if (!this.isNullOrEmpty()) {
-                mainVideModel.navigateToUserActivity(true)
+                mainVideModel.navigateToUserActivity(this)
             }
             mainVideModel.setLoadingState(false)
         }

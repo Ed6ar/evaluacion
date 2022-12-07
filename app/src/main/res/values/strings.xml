@@ -5,6 +5,9 @@
     <string name="app_name">Evaluación</string>
     <string name="SignUp">Registro</string>
     <string name="SignIn">Inicio de sesion</string>
+    <string name="List">Lista (%s)</string>
+    <string name="Create">Crear</string>
+    <string name="Update">Actualizar</string>
 
     <string name="ContinueSignIn">Continuar</string>
     <string name="Name">Nombre</string>
@@ -16,4 +19,6 @@
     <string name="InvalidName">Nombre invalido</string>
     <string name="InvalidPassword">Password invalido</string>
     <string name="SomethingWasWrong">Algo salió mal, inténtalo de nuevo</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
