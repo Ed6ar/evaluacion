@@ -32,9 +32,6 @@ class SignUpViewModel(
     }
 
     fun tryToRegisterUser(registerRequest: RegisterRequest, onSuccess: (token: String) -> Unit){
-
-        Log.e("tryToRegisterUser","registerRequest: $registerRequest")
-
         viewModelScope.launch(exceptionHandler) {
             _loading.postValue(true)
             RegisterUseCase(retrofit).execute(registerRequest = registerRequest).apply {

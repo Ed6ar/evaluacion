@@ -1,17 +1,18 @@
 package com.edgar.ui.viewModels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.edgar.data.services.signIn.SignInRequest
-import com.edgar.domine.LoginUseCase
+import com.edgar.data.services.usersList.UsersListData
+import com.edgar.domine.ListUsersUseCase
 import com.edgar.evaluacion.R
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 
-class SignInViewModel(
+class ListViewModel(
     private val retrofit: Retrofit
 ): ViewModel() {
 
@@ -21,25 +22,28 @@ class SignInViewModel(
     private var _errorId: MutableLiveData<Int?> = MutableLiveData()
     var errorId: LiveData<Int?> = _errorId
 
-    fun resetErrorMessage(){
-        _errorId.postValue(null)
-    }
+    private var _users: MutableLiveData<MutableList<UsersListData>> = MutableLiveData()
+    var users: LiveData<MutableList<UsersListData>> = _users
 
     private val exceptionHandler = CoroutineExceptionHandler { _, _ ->
         _loading.postValue(false)
         _errorId.postValue(R.string.SomethingWasWrong)
     }
 
-    fun tryToSignIn(signInRequest: SignInRequest, onSuccess: (token: String) -> Unit){
+    fun resetErrorMessage(){
+        _errorId.postValue(null)
+    }
+
+    fun tryToGetUsersList(){
+        _loading.postValue(true)
         viewModelScope.launch(exceptionHandler) {
-            _loading.postValue(true)
-            LoginUseCase(retrofit).execute(signInRequest = signInRequest).apply {
+            ListUsersUseCase(retrofit).execute().apply {
                 if(this.isSuccessful){
-                    _loading.postValue(false)
-                    onSuccess(this.body()!!.token!!)
+                    Log.e("tryToRegisterUser","${this.body()}")
+                    _users.postValue(this.body()!!.data.toMutableList())
                 }else{
-                    _loading.postValue(false)
-                    _errorId.postValue(R.string.WrongEmailOrPassword)
+                    Log.e("tryToRegisterUser","${this.errorBody()}")
+                    throw Exception()
                 }
             }
         }
