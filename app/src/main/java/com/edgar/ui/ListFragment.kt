@@ -1,13 +1,13 @@
 package com.edgar.ui
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.Fragment
 import com.edgar.data.UserDataHolder
 import com.edgar.evaluacion.R
 import com.edgar.evaluacion.databinding.FragmentListBinding
@@ -43,7 +43,18 @@ class ListFragment : Fragment() {
             this@ListFragment.getString(R.string.List, UserDataHolder.email)
 
         //Set RecyclerView
-        adapter = UserDataListAdapter()
+        adapter = UserDataListAdapter(
+            onClick = {
+                val emailIntent = Intent(Intent.ACTION_SEND)
+                emailIntent.type = "message/rfc822"
+
+                emailIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(it.email!!))
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "sa")
+                emailIntent.putExtra(Intent.EXTRA_TEXT, "as")
+
+                this@ListFragment.requireContext().startActivity(Intent.createChooser(emailIntent, "Select email app, please"))
+            }
+        )
         binding.rvList.adapter = adapter
 
         binding.etSearch.addTextChangedListener {

@@ -10,26 +10,32 @@ import com.edgar.data.services.usersList.UsersListData
 import com.edgar.evaluacion.R
 import com.edgar.evaluacion.databinding.UserCardBinding
 
-class UserDataListAdapter: RecyclerView.Adapter<UserDataListAdapter.ViewHolder>(){
+class UserDataListAdapter(
+    private val onClick: (UsersListData) -> Unit
+) : RecyclerView.Adapter<UserDataListAdapter.ViewHolder>() {
 
     private var usersList: List<UsersListData> = listOf()
 
-    class ViewHolder(view: View): RecyclerView.ViewHolder(view){
+    class ViewHolder(view: View, private val onClick: (UsersListData) -> Unit) : RecyclerView.ViewHolder(view) {
         private val binding = UserCardBinding.bind(view)
 
         fun setContent(dataItem: UsersListData) {
             binding.apply {
 
-                if(dataItem.first_name != null && dataItem.last_name != null){
+                cvUser.setOnClickListener {
+                    onClick(dataItem)
+                }
+
+                if (dataItem.first_name != null && dataItem.last_name != null) {
                     tvName.visibility = View.VISIBLE
                     tvName.text = dataItem.first_name.plus(" ").plus(dataItem.last_name)
-                }else{
+                } else {
                     tvName.visibility = View.GONE
                 }
-                if(dataItem.email != null){
+                if (dataItem.email != null) {
                     tvEmail.visibility = View.VISIBLE
                     tvEmail.text = dataItem.email
-                }else{
+                } else {
                     tvEmail.visibility = View.GONE
                 }
 
@@ -42,7 +48,10 @@ class UserDataListAdapter: RecyclerView.Adapter<UserDataListAdapter.ViewHolder>(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.user_card, parent, false))
+        return ViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.user_card, parent, false),
+            onClick = onClick
+        )
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -53,9 +62,7 @@ class UserDataListAdapter: RecyclerView.Adapter<UserDataListAdapter.ViewHolder>(
         return usersList.size
     }
 
-    internal fun setData(usersList: List<UsersListData>){
-        Log.e("datosEnList","dentro del adapter data: $usersList")
-
+    internal fun setData(usersList: List<UsersListData>) {
         this.usersList = usersList
         this.notifyDataSetChanged()
     }
