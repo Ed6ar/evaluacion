@@ -1,6 +1,5 @@
 package com.edgar.ui.viewModels
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,7 +13,7 @@ import retrofit2.Retrofit
 
 class ListViewModel(
     private val retrofit: Retrofit
-): ViewModel() {
+) : ViewModel() {
 
     private var _loading: MutableLiveData<Boolean> = MutableLiveData(false)
     var loading: LiveData<Boolean> = _loading
@@ -23,29 +22,47 @@ class ListViewModel(
     var errorId: LiveData<Int?> = _errorId
 
     private var _users: MutableLiveData<MutableList<UsersListData>> = MutableLiveData()
-    var users: LiveData<MutableList<UsersListData>> = _users
+
+    private var _usersFiltered: MutableLiveData<MutableList<UsersListData>> = MutableLiveData()
+    var usersFiltered: LiveData<MutableList<UsersListData>> = _usersFiltered
 
     private val exceptionHandler = CoroutineExceptionHandler { _, _ ->
         _loading.postValue(false)
         _errorId.postValue(R.string.SomethingWasWrong)
     }
 
-    fun resetErrorMessage(){
+    fun resetErrorMessage() {
         _errorId.postValue(null)
     }
 
-    fun tryToGetUsersList(){
-        _loading.postValue(true)
+    fun tryToGetUsersList() {
         viewModelScope.launch(exceptionHandler) {
+            _loading.postValue(true)
             ListUsersUseCase(retrofit).execute().apply {
-                if(this.isSuccessful){
-                    Log.e("tryToRegisterUser","${this.body()}")
-                    _users.postValue(this.body()!!.data.toMutableList())
-                }else{
-                    Log.e("tryToRegisterUser","${this.errorBody()}")
+                if (this.isSuccessful) {
+                    _loading.postValue(false)
+
+                    with(sortUsers(this.body()!!.data.toMutableList())){
+                        _users.postValue(this)
+                        _usersFiltered.postValue(this)
+                    }
+
+                } else {
                     throw Exception()
                 }
             }
+        }
+    }
+
+    private fun sortUsers(toMutableList: MutableList<UsersListData>): MutableList<UsersListData> {
+        toMutableList.sortBy { it.first_name.plus(" ${it.last_name}") }
+        return toMutableList
+    }
+
+    fun filter(name: String){
+        val holder = _users.value!!.toMutableList()
+        with(holder.filter { it.first_name.plus(" ${it.last_name}").contains(name) }){
+            _usersFiltered.postValue(this.toMutableList())
         }
     }
 

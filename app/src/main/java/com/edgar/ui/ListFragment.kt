@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import com.edgar.data.UserDataHolder
 import com.edgar.evaluacion.R
 import com.edgar.evaluacion.databinding.FragmentListBinding
@@ -41,12 +42,18 @@ class ListFragment : Fragment() {
         this@ListFragment.requireActivity().title =
             this@ListFragment.getString(R.string.List, UserDataHolder.email)
 
+        //Set RecyclerView
         adapter = UserDataListAdapter()
         binding.rvList.adapter = adapter
+
+        binding.etSearch.addTextChangedListener {
+            listViewModel.filter(it.toString())
+        }
+
     }
 
     private fun listeners() {
-        /*
+
         listViewModel.loading.observe(viewLifecycleOwner) {
             if (it) {
                 binding.listLoader.root.visibility = View.VISIBLE
@@ -56,7 +63,7 @@ class ListFragment : Fragment() {
                 binding.listLoader.root.visibility = View.GONE
             }
         }
-        */
+
         listViewModel.errorId.observe(viewLifecycleOwner) {
             if (it != null) {
                 listViewModel.resetErrorMessage()
@@ -65,9 +72,8 @@ class ListFragment : Fragment() {
                     .show()
             }
         }
-        listViewModel.users.observe(viewLifecycleOwner) {
-            Log.e("datosEnList","data: $it")
 
+        listViewModel.usersFiltered.observe(viewLifecycleOwner) {
             adapter.setData(it)
         }
 
