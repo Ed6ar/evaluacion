@@ -25,5 +25,4 @@ class UserActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(binding.navHostFragment.id) as NavHostFragment
         return navHostFragment.navController
     }
-
 }

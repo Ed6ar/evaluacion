@@ -14,10 +14,12 @@ import com.edgar.evaluacion.R
 import com.edgar.evaluacion.databinding.ActivityMainBinding
 import com.edgar.ui.viewModels.MainViewModel
 import com.google.gson.Gson
+import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
+import org.koin.core.logger.Level
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,7 +33,8 @@ class MainActivity : AppCompatActivity() {
 
         startKoin {
             // Enable logs
-            androidLogger()
+            androidLogger(Level.DEBUG)
+            androidContext(applicationContext)
             // Add modules
             modules(VIEW_MODELS, RETROFIT)
         }

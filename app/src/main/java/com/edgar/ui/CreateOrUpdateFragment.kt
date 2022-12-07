@@ -5,21 +5,26 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
+import com.edgar.data.services.create.CreateRegisterRequest
 import com.edgar.data.services.usersList.UsersListData
 import com.edgar.evaluacion.R
 import com.edgar.evaluacion.databinding.FragmentCreateOrUpdateBinding
 import com.edgar.ui.utils.emojisFilter
-import com.edgar.ui.utils.validateEmail
+import com.edgar.ui.viewModels.CreateOrUpdateViewModel
 import com.google.gson.Gson
+import org.koin.androidx.viewmodel.ext.android.activityViewModel
 
 class CreateOrUpdateFragment : Fragment() {
 
     private lateinit var binding: FragmentCreateOrUpdateBinding
+    private val createOrUpdateViewModel by activityViewModel<CreateOrUpdateViewModel>()
+
     private var usersListData: UsersListData? = null
     private var nameHolder: String = ""
     private var lastNameHolder: String = ""
-    private var emailHolder: String = ""
+    private var jobHolder: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +67,7 @@ class CreateOrUpdateFragment : Fragment() {
 
             etName.filters = arrayOf(emojisFilter())
             etLastName.filters = arrayOf(emojisFilter())
-            etEmailToUpdate.filters = arrayOf(emojisFilter())
+            etJob.filters = arrayOf(emojisFilter())
 
             etName.addTextChangedListener {
                 etName.error = if(it.toString().isEmpty()) {
@@ -84,9 +89,8 @@ class CreateOrUpdateFragment : Fragment() {
                 validateButtonState()
             }
 
-            etEmailToUpdate.addTextChangedListener {
-                validateEmail(view = etEmailToUpdate, email = it.toString())
-                emailHolder = it.toString()
+            etJob.addTextChangedListener {
+                jobHolder = it.toString()
                 validateButtonState()
             }
 
@@ -95,19 +99,43 @@ class CreateOrUpdateFragment : Fragment() {
 
     private fun validateButtonState(){
         if(usersListData != null) {
-            binding.btEdit.isEnabled = nameHolder.isNotEmpty() && lastNameHolder.isNotEmpty() && binding.etEmailToUpdate.error.isNullOrEmpty()
+            binding.btEdit.isEnabled = nameHolder.isNotEmpty() && lastNameHolder.isNotEmpty() && jobHolder.isNotEmpty()
         }else{
-            binding.btAddRegister.isEnabled = nameHolder.isNotEmpty() && lastNameHolder.isNotEmpty() && binding.etEmailToUpdate.error.isNullOrEmpty()
+            binding.btAddRegister.isEnabled = nameHolder.isNotEmpty() && lastNameHolder.isNotEmpty() && jobHolder.isNotEmpty()
         }
     }
 
     private fun listeners(){
+        createOrUpdateViewModel.loading.observe(viewLifecycleOwner) {
+            if (it) {
+                binding.cuLoader.root.visibility = View.VISIBLE
+                binding.llContentCU.visibility = View.GONE
+            } else {
+                binding.llContentCU.visibility = View.VISIBLE
+                binding.cuLoader.root.visibility = View.GONE
+            }
+        }
+
+        createOrUpdateViewModel.errorId.observe(viewLifecycleOwner) {
+            if (it != null) {
+                createOrUpdateViewModel.resetErrorMessage()
+                val errorMessage = this@CreateOrUpdateFragment.getString(it)
+                Toast.makeText(this@CreateOrUpdateFragment.requireContext(), errorMessage, Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+
         binding.btEdit.setOnClickListener {
             //TODO
         }
 
         binding.btAddRegister.setOnClickListener {
-            //TODO
+            createOrUpdateViewModel.tryToCreateRegister(
+                createRegisterRequest = CreateRegisterRequest(
+                    name = nameHolder.plus(" $lastNameHolder"),
+                    job = jobHolder
+                )
+            )
         }
     }
 }
